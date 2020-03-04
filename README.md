@@ -1,6 +1,7 @@
-# k8s with kind
+# k8s with kind if you only have docker env to work with.
 
-## If you are not using minikube but using kind then these steps can help with running your k8s workloads:
+If you only have docker env to work with then minikube is not an option for you.
+If you want k8s in docker vm then kind(k8s in docker) can be used.
 After installing Kind and creating the kind cluster we might want to quickly start spinning workloads in k8s cluster. 
 For that we need docker images if we are not building one.
 
@@ -35,17 +36,6 @@ v3: Pulling from docker.io/luksa/kubia
 Digest: sha256:64e06eba2c35e7ccba6f26626ac962164382adedcef30b3416517f47d81f7a0b
 Status: Image is up to date for docker.io/luksa/kubia:v3
 ```
-
-```
-DEV [ ~]$ docker pull luksa/kubia:v3
-Trying to pull repository docker.io/luksa/kubia ...
-v3: Pulling from docker.io/luksa/kubia
-671d0d9027cc: Already exists
-1b3b3c9b2d4f: Already exists
-ae498b5b3444: Pull complete
-Digest: sha256:bcae4c20b355376d86bb34db0c9637a2e72058db5a66af82c868a2cfdcb0ac80
-Status: Downloaded newer image for docker.io/luksa/kubia:v3
-```
 ```
 DEV [ ~]$ kind load docker-image luksa/kubia:v3
 Image: "luksa/kubia:v3" with ID "sha256:e5464484693ec7ccfe5a5309bc98aec3129a4c6d219d38b107e60d6c85d7999a" not present on node "kind-control-plane"
@@ -55,6 +45,7 @@ Image: "luksa/kubia:v3" with ID "sha256:e5464484693ec7ccfe5a5309bc98aec3129a4c6d
 DEV [ ~]$ kubectl create deploy kubia --image=luksa/kubia:v3
 deployment.apps/kubia created
 ```
+
 ```
 DEV [ ~]$ kubectl get all
 NAME                        READY   STATUS    RESTARTS   AGE
@@ -69,4 +60,24 @@ deployment.apps/kubia   1/1     1            1           14s
 NAME                              DESIRED   CURRENT   READY   AGE
 replicaset.apps/kubia-f578dcdb9   1         1         1       14s
 
+```
+```
+DEV [ ~]$ kubectl describe pod/kubia-f578dcdb9-ngxqx
+Name:         kubia-f578dcdb9-ngxqx
+Namespace:    default
+Priority:     0
+Node:         kind-control-plane/
+Start Time:  
+Labels:       app=kubia
+              pod-template-hash=f578dcdb9
+Annotations:  <none>
+Status:       Running
+IP:           
+IPs:
+  IP:           
+Controlled By:  ReplicaSet/kubia-f578dcdb9
+Containers:
+  kubia:
+    Container ID:   containerd://5b76421e24154a668d60c4cdc45e90fab087317bc406311d249c387d8cc792e1
+    Image:          luksa/kubia:v3
 ```
