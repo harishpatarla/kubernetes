@@ -1,5 +1,14 @@
 ### CKAD
 
+https://github.com/marcusvieira88/CKAD-commands
+
+Set alias
+```
+export KUBE_EDITOR=nano
+alias k=kubectl
+alias kx=”kubectl explain”
+```
+
 ```
 kubectl run nginx --image=nginx   (deployment)
 kubectl run nginx --image=nginx --restart=Never   (pod)
