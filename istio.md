@@ -83,7 +83,7 @@ https://istio.io/docs/reference/config/networking/destination-rule/#LoadBalancer
 
 consistent hashing - for a given client IP, the hash returned will always be the same which
 will make the client to route to the same(canary/non-canary) version.
-```
+```yaml
 kind: DestinationRule       # Defining which pods should be part of each subset
 apiVersion: networking.istio.io/v1alpha3
 metadata:
