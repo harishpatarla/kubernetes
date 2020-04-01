@@ -1,5 +1,12 @@
-# Istio
+## Istio
+### Section 5: Telemetry
 
+#### Kiali
+#### Jaeger
+#### Distributed Tracing
+
+
+### Section 6: Traffic Management
 A VirtualService(it does CustomRouting - better name) enables 
 us to configure custom routing rules to our service mesh.
 
@@ -27,7 +34,7 @@ envoy's traffic management features and envoy is really doing all this canary bu
 It's just that Istio gives us the ability to configure all of the proxies that need configuring
 without us even really needing to think about the envoy proxies.
 
-### Difference between k8s service and istio service
+#### Difference between k8s service and istio service
 A Kubernetes service is how we discover the IP addresses of individual pods.
 
 The virtual services allow us to reconfigure the proxies in a dynamic fashion.
@@ -35,7 +42,7 @@ The virtual services allow us to reconfigure the proxies in a dynamic fashion.
 And that's why we can do things such as changing the weighting of a canary without having to
 restart the system or make any changes to the pods.
 
-```
+```yaml
 kind: VirtualService
 apiVersion: networking.istio.io/v1alpha3
 metadata:
@@ -58,7 +65,7 @@ spec:
 
 DestinationRule is a configuration of a load balancer for a particular service.
 
-```
+```yaml
 kind: DestinationRule       # Defining which pods should be part of each subset
 apiVersion: networking.istio.io/v1alpha3
 metadata:
@@ -75,6 +82,7 @@ spec:
         version: risky
       name: risky-group
 ```
+### Section 7: Load Balancing
 Is it possible to use the weighted destination rules and to make a
 single user stick to a canary or the not-canary version depending on which one they got first.
 
@@ -102,7 +110,6 @@ spec:
       name: all-staff-service-pods
 
 ```
-
 https://github.com/istio/istio/issues/9764
 
 So, with weights for canary/non-canary, consistent hashing does not work to ensure sticky sessions 
@@ -111,3 +118,13 @@ https://github.com/envoyproxy/envoy/issues/8167
 It works if you use httpHeaderName
 
 Consistent hashing can be used to have some instance level cache - sharding, you can use this and achieve cache hits
+
+### Section 8: Gateways
+
+### Section 9: Dark Releases
+
+### Section 10: Fault Injection
+
+### Section 11: Circuit Breaking
+
+### Section 12: Mutual TLS

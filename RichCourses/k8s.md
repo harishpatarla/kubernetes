@@ -1,7 +1,74 @@
-### Sec 22: Horizontal Pod Autoscaling
+### Sec 22: Horizontal Pod Autoscaling(HPA)
+
+Every pod can be replicated but you need to make sure that that software is designed
+so that if it's replicated, the system is going to continue to behave properly.
+
+you need to make sure that that software is designed
+so that if it's replicated, the system is
+going to continue to behave properly.
+
+So, in a Kubernetes cluster, when we take a pod
+and we create multiple instances of that pod,
+we are horizontally scaling.
+
+We can automatically autoscale at runtime.
+Make sure that the metrics-server is enabled for hpa. 
+Earlier heapster was used but is now deprecated
+
+Lets say our CPU request is **_100 mi_**
+We can define a hpa rule:
+
+`If api-gateway > 50 % CPU then
+Autoscale to a maximum of 4 pods.
+`
+
+`If api-gateway < 50 % CPU then Autoscale will scale down.`
+
+```
+kubectl autoscale deployment api-gateway --cpu-percent 400 --min 1 --max 4
+kubectl get hpa api-gateway -o yaml
+kubectl describe hpa api-gateway
+kubectl delete hpa api-gateway
+```
+
+```yaml
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-gateway
+  namespace: default
+spec:
+  maxReplicas: 4
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: api-gateway
+  targetCPUUtilizationPercentage: 400
+```
+
+After an autoscale there is a wait time as the CPU is monitored and only if it consistently is below threshold will it scale down again.
+This is to avoid scale up and down events to happen too frequently.
+
 ### Sec 23: Readiness and Liveness
+##### Why we need Readiness probe
+
+There will be a period when the pod's running but it's not able to do anything useful
+because the programme inside the pod is still starting up.
+
+When we have a readiness probe,Kubernetes will not send traffic to that pod
+until the readiness probe is showing that the pod is ready to receive requests.
+
+With this status of new pods will be running but READY - 0/1.
+
+##### Why we need Liveness probe
+When we have some issue with pod then this pod will not be live and will not get any requests.
+
 ### Section 24: Quality of Service and Eviction
+
 ### Section 25: RBAC (Role Based Access Control)
+
+
 ### Section 26: Kubernetes ConfigMaps and
 
 ### sec 27 - Ingress controller
