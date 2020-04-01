@@ -66,10 +66,115 @@ When we have some issue with pod then this pod will not be live and will not get
 
 ### Section 24: Quality of Service and Eviction
 ![alt text](https://github.com/harishpatarla/kubernetes/blob/master/RichCourses/QualityOfService.png)
+
+1. **Guaranteed**: Pod with a request and a limit,and those values are the same
+2. **Burstable**: If you have a pod which specifies a request but no limit,
+and this could be a memory request and/or a CPU request.
+_Pod is allowed to go over its requested memory/CPU. Request is just a hint to how much pod can use to run comfortably. So pod can burst._
+3. **BestEffort**: If you have a pod which neither specifies request nor limit.
+
+These labels are used by the scheduler when node runs out of resources.
+
+These labels will help the scheduler decide which pods to evict if the node is under pressure.
+
+Linux cgroups are used to evict the pods.
+It will evict any Best Effort pods first.
+then it will start to evict the Burstable pods.
+Only then, if it really can't free up
+enough resources from that,
+will it start to evict Guaranteed pods.
+
+If you have more than one container running in 
+a pod then you need to set req/limits on both containers
+ for it to get a desired label.
 ### Section 25: RBAC (Role Based Access Control)
 
+```yaml
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+   name: new-joiner
+   namespace: default
+rules:
+- apiGroups: ["","apps"] # Core API(for services) AND apps(for deployment)
+  resources: ["*"]  # pods, services, deployments...maybe not for secrets
+  verbs: ["get", "list", "watch"]
 
-### Section 26: Kubernetes ConfigMaps and
+```
+any new joiner will only be able to do get, list and watch.
+_**apiGroups**_ 
+_**"watch"**_ calls the rest API on the cluster and subscribe to changes.
+Spring cloud kubernetes uses this to watch for changes made to ConfigMaps.
+
+##### Defining RoleBindings 
+Allows us to put users into new-joiner role
+
+```yaml
+
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: put-specific-user-or-users-into-new-joiner-role
+  namespace: default
+subjects:
+- kind: User
+  name: francis-linux-login-name
+roleRef:
+  kind: Role
+  name: new-joiner
+  apiGroup: rbac.authorization.k8s.io
+
+```
+`kubectl config view` will give below output
+
+```yaml
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: DATA+OMITTED
+    server: https://harish.k8s.local:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    namespace: harish-playground
+    user: harishpatarla
+  name: harish@kubernetes
+current-context: harish@kubernetes
+kind: Config
+preferences: {}
+users:
+- name: harishpatarla
+  user:
+    auth-provider:
+```
+
+new user can get access to cluster in secured way
+kubectl config set-context mycontext --user harish --cluster kubernetes
+
+If you want to set multiple contexts for multiple clusters follow below:
+https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/
+
+x509 certificate should be given to new-joiner user by the root user of the cluster.
+
+There would be certificate authority hidden in the cluster and only the root user can access it.
+root user can generate private key to give to the new joiner
+
+`openssl genrsa -out private-key-new-joiner.key 2048`
+
+now we need a certificate signing request 
+```
+openssl req -new -key private-key-new-joiner.key -out req.csr -subj "/CN=francis-linux-login-name/0=francis-linux-login-name"
+```
+
+These Roles and RoleBindings are specific to a namespace.
+ 
+To make them apply to whole of cluster, use  ClusterRole and ClusterRoleBinding
+
+### Section 26: Kubernetes ConfigMaps and Secrets
+
+Feed values of 
+
 
 ### sec 27 - Ingress controller
 So far we used NodePort - to access service on a specific port.
