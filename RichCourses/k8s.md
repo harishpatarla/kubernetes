@@ -65,7 +65,7 @@ With this status of new pods will be running but READY - 0/1.
 When we have some issue with pod then this pod will not be live and will not get any requests.
 
 ### Section 24: Quality of Service and Eviction
-
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/RichCourses/QualityOfService.png)
 ### Section 25: RBAC (Role Based Access Control)
 
 
