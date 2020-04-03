@@ -2,11 +2,13 @@ Below is repo used for this course of helm
 https://github.com/phcollignon/helm
 #### Configuring Helm Security
 service account
-Tiller runs as pod with previledge of service account
-tiller has cluster admin rights
-In PROD restrict tiller access on k8s cluster
+Tiller runs as pod with privilege of service account.
 
-Add tiller service account
+Tiller has cluster admin rights.
+
+In PROD restrict tiller access on k8s cluster.
+
+Add Below tiller service account:
 
 ```yaml
 apiVersion: v1
