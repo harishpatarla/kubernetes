@@ -155,4 +155,6 @@ New revision of same Release - Release revision
     ```
        helm delete modest-pike --purge
     ``` 
-    
+ #### Building an umbrella helm
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/helm1.png)
+
