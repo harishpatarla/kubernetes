@@ -167,3 +167,54 @@ value | upper | quote
 
 
 ![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/helm2.png)
+
+Functions and pipelines come from 
+Go text/template package,
+sprig functions,
+helm project.
+
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/helmfunctionsandpipelines.png)
+
+Modifying scope - _"with"_ 
+
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/removingcarriagereturnfromdefinitions.png)
+
+#### Helper functions
+
+
+_helpers.tpl
+```yaml
+{{- define "backend.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+```
+These are called sub-templates.
+
+.helmignore - add *.tpl to it
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "backend.fullname" . }}-secret 
+data:
+  mongodb-uri: {{ with .Values.secret.mongodb_uri -}}
+  {{- list "mongodb://" .username ":" .password "@" $.Release.Name "-" .dbchart ":" .port "/" .dbconn | join ""  | b64enc |  quote }}
+# {{- ( printf "%s%s:%s@%s-%s%s" "mongodb://" .username .password $.Release.Name "database" ":27017/guestbook?authSource=admin" ) | b64enc | quote }}
+{{- end }}
+```
+
+### Managing dependencies
+
+packaging a chart  in a .tar.gz archive
+add version to the archive
+
+`helm package chart-name`
+
+publishing in a repository
+
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/helmrepository.png)
