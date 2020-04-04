@@ -244,6 +244,7 @@ dependencies:
       - api
 ```
 
+
 requirements.lock is when versions are frozen.
 
 you can define compatibility between versions using below
@@ -275,4 +276,20 @@ Refer https://github.com/masterminds/semver
 
 ![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/chartsdeps.png)
 
+conditions and tags:
+
+values.yaml will have values for it and will be replaced.
+
+database is set to false so it is not enabled.
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/conditionsandtags.png)
+
+You can ovveride values with --set 
+```
+helm dependency update guestbook
+helm install guestbook
+helm install guestbook --set database.enabled=true
+helm install guestbook --set tags.api=false
+```
+
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/analogies.png)
 
