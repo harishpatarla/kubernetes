@@ -291,5 +291,72 @@ helm install guestbook --set database.enabled=true
 helm install guestbook --set tags.api=false
 ```
 
+#### Using existing charts
+
 ![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/analogies.png)
+
+lifecycle 
+
+sources -> packages -> repositories -> hub
+
+Helm stable repo
+
+https://github.com/helm/charts
+
+https://kubernetes-charts.storage.googleapis.com/
+
+https://hub.helm.sh/
+
+```
+helm repo list
+helm search keyword(helm search nginx)
+helm inspect chart_name
+helm inspect chart chart_name
+helm inspect values chart_name
+helm fetch chart_name
+helm dependecny update chart_name
+```
+
+child-parent charts: 
+
+```yaml 
+dependencies:
+  - name: backend
+    version: ~1.2.2
+    repository: http://127.0.0.1:8879/charts
+    condition: backend.enabled,global.backend.enabled
+    tags:
+      - api
+  - name: frontend
+    version: ^1.2.0
+    repository: http://127.0.0.1:8879/charts
+    import-values:
+      - data
+  - name: database
+    version: ~1.2.2
+    repository: http://127.0.0.1:8879/charts
+    condition: database.enabled,global.database.enabled
+    tags:
+      - api
+```
+In this example you can access the mongo username with 
+{{.Values.frontend_data.mongodb_uri.username}}
+
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/analogies.png)
+
+```
+helm search mongodb
+helm inspect stable/mongodb | less
+x-www-browser http://hub.helm.sh
+```
+In requirements.yaml update 
+```yaml
+  - name: mongodb
+    version: 6.1.x
+    repository: https://kubernetes-charts.storage.googleapis.com
+    condition: mongodb.enabled
+    tags:
+      - api
+
+```
 
