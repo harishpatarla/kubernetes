@@ -123,9 +123,47 @@ New revision of same Release - Release revision
  #### Building an umbrella helm
 ![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/helm1.png)
 
-Helm Template is needed to reuse k8s workloads we create
+Helm Template help us reuse k8s workloads we create
 
 Helm Template Engine:
 ![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/helmTemplate.png)
 
+helm get <release_name>
 
+#### Playing with helm template data
+values.yaml can have values
+
+values can also be in other-file.yaml but need to be referenced as -f file
+
+`{{.Values.service.name}}`
+
+Chart data can be accessed from chart.yaml 
+
+`
+{{.Chart.Name}}
+`
+
+Release data and Kubernetes data 
+
+`{{.Capabilities.KubeVersion}}
+`
+
+Template data 
+
+Helm do not support - but _ in values.yaml. Ex: guestbook_name: {{.Chart.Name}}
+
+```
+helm lint
+```
+
+#### Functions and pipelines
+
+quote(value)
+default(default_value, value)
+
+quote | value
+value | default default_value
+value | upper | quote
+
+
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/helm2.png)
