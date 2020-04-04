@@ -218,3 +218,61 @@ add version to the archive
 publishing in a repository
 
 ![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/helmrepository.png)
+
+#### Defining dependencies:
+how to define dependencies between charts
+
+we copy packed(.tar.gz)/ unpacked charts of each of frontend, backend and database into charts repository.
+
+requirements.yaml
+```yaml 
+dependencies:
+  - name: backend
+    version: ~1.2.2
+    repository: http://127.0.0.1:8879/charts
+    condition: backend.enabled,global.backend.enabled
+    tags:
+      - api
+  - name: frontend
+    version: ^1.2.0
+    repository: http://127.0.0.1:8879/charts
+  - name: database
+    version: 5.x.x
+    repository: http://127.0.0.1:8879/charts
+    condition: database.enabled,global.database.enabled
+    tags:
+      - api
+```
+
+requirements.lock is when versions are frozen.
+
+you can define compatibility between versions using below
+
+Refer https://github.com/masterminds/semver
+
+```
+1.2 - 1.4.5 which is equivalent to >= 1.2 <= 1.4.5
+2.3.4 - 4.5 which is equivalent to >= 2.3.4 <= 4.5
+1.2.x is equivalent to >= 1.2.0, < 1.3.0
+>= 1.2.x is equivalent to >= 1.2.0
+<= 2.x is equivalent to < 3
+* is equivalent to >= 0.0.0
+~1.2.3 is equivalent to >= 1.2.3, < 1.3.0
+~1 is equivalent to >= 1, < 2
+~2.3 is equivalent to >= 2.3, < 2.4
+~1.2.x is equivalent to >= 1.2.0, < 1.3.0
+~1.x is equivalent to >= 1, < 2
+^1.2.3 is equivalent to >= 1.2.3, < 2.0.0
+^1.2.x is equivalent to >= 1.2.0, < 2.0.0
+^2.3 is equivalent to >= 2.3, < 3
+^2.x is equivalent to >= 2.0.0, < 3
+^0.2.3 is equivalent to >=0.2.3 <0.3.0
+^0.2 is equivalent to >=0.2.0 <0.3.0
+^0.0.3 is equivalent to >=0.0.3 <0.0.4
+^0.0 is equivalent to >=0.0.0 <0.1.0
+^0 is equivalent to >=0.0.0 <1.0.0
+```
+
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/chartsdeps.png)
+
+
