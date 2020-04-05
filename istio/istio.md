@@ -137,6 +137,8 @@ And below rules will apply where header matches tester, v2 version is shown. For
 
 In real world you would use cookies or JWT to do this.
 
+**Custom Routing Rules**
+
 ```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -233,3 +235,15 @@ spec:
         subset: v1
 
 ```
+
+Istio is managing external traffic in this case as there is a front end app calling this service.
+
+So we need an extra component called Gateway which accepts all external traffic and routes them to virtualservice.
+
+**Blue/Green example**
+
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/bluegreen.png)
+
+**Canary example**
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/canary.png)
+
