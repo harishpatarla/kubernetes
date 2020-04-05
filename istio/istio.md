@@ -244,6 +244,119 @@ So we need an extra component called Gateway which accepts all external traffic 
 
 ![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/bluegreen.png)
 
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bookinfo
+spec:
+  hosts:
+    - bookinfo.local
+  gateways:
+    - bookinfo-gateway
+  http:
+  - route:
+    - destination:
+        host: productpage
+        subset: v1
+        port:
+          number: 9080
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bookinfo-test
+spec:
+  hosts:
+    - test.bookinfo.local
+  gateways:
+    - bookinfo-gateway
+  http:
+  - route:
+    - destination:
+        host: productpage
+        subset: v2
+        port:
+          number: 9080
+```
+
+In real world you would have labels - _blue/green_ and can use them to switch. 
+
+So we never change anything in k8s workload yamls. This happen in layer 7.
+
+
 **Canary example**
+
 ![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/canary.png)
+
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bookinfo
+spec:
+  hosts:
+    - bookinfo.local
+  gateways:
+    - bookinfo-gateway
+  http:
+  - route:
+    - destination:
+        host: productpage
+        subset: v1
+        port:
+          number: 9080
+      weight: 70
+    - destination:
+        host: productpage
+        subset: v2
+        port:
+          number: 9080
+      weight: 30
+```
+**Canary with sticky sessions**
+Since a user can see randomly v1/v2 when he requests, we can leverage cookies.
+
+So a user who sees v2, will always see v2 with the below conf.
+
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bookinfo
+spec:
+  hosts:
+    - bookinfo.local
+  gateways:
+    - bookinfo-gateway
+  http:
+    - match:
+        - headers:
+            cookie:
+              regex: "^(.*?;)?(product-page=v2)(;.*)?$"
+      route:
+        - destination:
+            host: productpage
+            subset: v2
+            port:
+              number: 9080
+    - route:
+        - destination:
+            host: productpage
+            subset: v1
+            port:
+              number: 9080
+          weight: 70
+        - destination:
+            host: productpage
+            subset: v2
+            port:
+              number: 9080
+          weight: 30
+```
+
+
+
+
+
 
