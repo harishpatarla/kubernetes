@@ -121,6 +121,8 @@ Consistent hashing can be used to have some instance level cache - sharding, you
 
 ### Section 8: Gateways
 
+Ingress Gateways:
+
 ### Section 9: Dark Releases
 
 ### Section 10: Fault Injection
