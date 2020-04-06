@@ -355,8 +355,43 @@ spec:
           weight: 30
 ```
 
+**Circuit Breaker with Outlier Detection**
 
+one of the pod evicted from the group and requests stop being sent to it, giving it time to recover. 
 
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/canary.png)
+
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: details
+spec:
+  host: details
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
+      trafficPolicy:
+        outlierDetection:
+          consecutiveErrors: 2 #how many errors in 1m interval
+          interval: 1m
+          baseEjectionTime: 5m #keep them evicted for this time. 1st eviction for 5m, 2nd for 10m, 3rd for 15m
+          maxEjectionPercent: 100 #this would evict all the pods
+```
+
+```
+kubectl describe dr <resourcename>  
+kubectl describe vs <resourcename>  
+kubectl describe svc <resourcename>  
+
+```
 
 
 
