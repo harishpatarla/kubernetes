@@ -44,3 +44,6 @@ _Cluster_ - A spinnaker deployment, logical grouping of server groups.
 
 ![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/pipelines.png)
 
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/pipelines2.png)
+
+
