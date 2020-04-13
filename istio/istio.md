@@ -393,5 +393,39 @@ kubectl describe svc <resourcename>
 
 ```
 
+#### Securing communication with Mutual TLS
+
+_**Istio**_ - 
+
+    can change the nature of communication between services, 
+    upgrade basic http to https with client certificates,
+    without needing to change any of the code or managing certs ourselves.
+
+_**Trusted subsystems pattern**_ - When services are internal and not publicly available its tempting not to encrypt communication between those services.
+So there is no authentication, authorization or encryption of traffic.
+Certificates need not be part of the code. We can make use of the certificates for authentication and authorization which istio manages for us.
+
+Each client and each service has a certificate that is managed by istio .
+We can configure rules to apply policies where we can service1 can be accessed by service2 but not service3.
+
+_**JWT**_ - This same thing can be used for end user authentication where we require end user
+to provide a token to access our service and use that token foe authentication/authorization.
+
+![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/mTLS.png)
+
+_**Mesh policy**_ - entire service mesh (default) - across all services in all namespaces
+
+**_Policy_** - More on specific service level
+
+peers - specifies authentication mechanism for calling service
+
+TLS - server has certificate to identify itseld and encrpty traffic but also client also has 
+certificate to identify itself
+
+mode - PERMISSIVE - if both sides of communication is managed by istio.
+This means mTLS is supported but is not required.
+
+DestinationRule - tls trafficMode - ISTIO_MUTUAL - istio will manage the traffic
+Istio proxy upgrade traffic from http to https for a calling service.
 
 

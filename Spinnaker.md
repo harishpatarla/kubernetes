@@ -50,4 +50,4 @@ _Cluster_ - A spinnaker deployment, logical grouping of server groups.
 
 ![alt text](https://github.com/harishpatarla/kubernetes/blob/master/images/pipelines4.png)
 
-
+**Manual Decisions**
