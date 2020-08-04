@@ -22,3 +22,33 @@ kubectl expose deployment frontend --type=NodePort --name=frontend-service --por
 kubectl set serviceaccount deployment frontend myuser
 kubectl create service clusterip my-cs --tcp=5678:8080 --dry-run -o yaml
 ```
+
+
+Replication Controller
+
+- High Availability
+- Load Balancing and Scaling
+
+This is replaced by replica sets.
+
+
+config maps
+
+```yaml
+kubectl create configmap <config-name> --from-literal=<key>=<value>
+kubectl create configmap <config-name> --from-file=<path-to-file>
+
+kubectl get configmaps
+kubectl describe configmaps
+```
+
+```yaml
+envFrom:
+    - configMapRef:
+        name: app-config
+
+```
+
+
+```
+
