@@ -76,6 +76,7 @@ $ kubectl [command] [TYPE] [NAME] -o <output_format>
 `-o wide` Output in the plain-text format with any additional information.
 
 `-o yaml` Output a YAML formatted API object. 
+
 ## Replication Controller
 
 - High Availability
@@ -148,6 +149,56 @@ envFrom:
 
 ```
 
+#### Namespace
+
+```yaml
+kubectl create -f namespace-dev.yaml
+kubectl create namespace dev
+kubectl get pods --namespace=dev
+kubectl config set-context $(kubectl config current-context) --namespace=dev (switch to dev namespace)
+kubectl get pods --all-namespaces
 
 ```
+
+#### docker 
+```yaml
+docker run ubuntu
+docker ps
+docker ps -a
+container exists as long as process inside it is alive. Once the process is done container will exit.
+```
+
+#### commands and arguments in k8s
+##### Edit a pod - 1st approach
+
+```yaml
+`kubectl edit pod <pod name>` - maybe denied
+kubectl delete pod webapp
+A temp file will be created and you can use that to create a pod
+kubectl create -f /tmp/kubectl-edit-ccvrq.yaml 
+```
+Remember, you CANNOT edit specifications of an existing POD other than the below.
+
+1.  spec.containers[*].image
+2.  spec.initContainers[*].image
+3.  spec.activeDeadlineSeconds
+4.  spec.tolerations
+
+##### Edit a pod - 2nd approach
+```yaml
+kubectl get pod webapp -o yaml > my-new-pod.yaml
+vi my-new-pod.yaml
+kubectl delete pod webapp
+kubectl create -f my-new-pod.yaml
+```
+
+##### Edit Deployments
+With Deployments you can easily edit any field/property of the POD template.
+ 
+Since the pod template is a child of the deployment specification,  with every change the deployment will automatically delete and create a new pod with the new changes. 
+
+So if you are asked to edit a property of a POD part of a deployment you may do that simply by running the command.
+
+`kubectl edit deployment my-deployment`
+
 
