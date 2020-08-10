@@ -1,6 +1,8 @@
 ### CKAD
 
 https://github.com/marcusvieira88/CKAD-commands
+https://github.com/twajr/ckad-prep-notes
+https://dev.to/boncheff/certified-kubernetes-application-developer-notes-10i1
 
 ## Exam specific
 Set alias
@@ -343,3 +345,136 @@ $ kubectl exec -it my-k8s-dahboard ls /var/run/secrets/k8s.io/serviceaccount/tok
 
 #### Resource Requirements
 K8s scheduler decides which node a pod goes to
+
+min. resource
+
+```yaml
+resources:
+    requests:
+      memory: "1Gi"
+      cpu: 1
+    limits:
+      
+```
+
+1 CPU = 1 AWS vCPU, 1 GCP core, 1 Azure core, 1 hyper-thread
+
+1KB = 1000 bytes
+1MB = 1000 KB
+1GB = 1000 MB
+
+1 GiB = 1024 MiB
+1 MiB = 1024 KiB
+1 KiB = 1024 bytes
+
+when pod tries to exceed resources, k8s throttles the CPU so that it does not go beyond the specified limit.
+However, this is not the case with the memory, a container can use more memory resources than its limit.
+So if a pod tries to consume more memory than its limit constantly the pod will be terminated.
+
+
+When a pod is created the containers are assigned a default CPU request of .5 and memory of 256Mi".
+For the POD to pick up those defaults you must have first set those as default values for request and limit by creating a LimitRange in that namespace.
+
+```yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: mem-limit-range
+spec:
+  limits:
+  - default:
+      memory: 512Mi
+    defaultRequest:
+      memory: 256Mi
+    type: Container
+```
+
+```yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cpu-limit-range
+spec:
+  limits:
+  - default:
+      cpu: "1"
+    defaultRequest:
+      cpu: "0.5"
+    type: Container
+```
+
+#### Taints and Tolerations
+
+Taints are set on nodes and tolerations are set on pods.
+
+Taints and Tolerations does not tell a pod to go on particular node. Instead it only tells node to accept a pod with 
+certain tolerations.
+
+```yaml
+$ kubectl taint nodes node-name key=value:taint-effect
+```
+taint-effect - NoSchedule | PreferNoSchedule | NoExecute
+
+```yaml
+$ kubectl taint nodes node1 app=blue:NoSchedule
+```
+
+```yaml
+spec:
+    tolerations:
+      - key: "app"
+        operator: "Equal"
+        value: "blue"
+        effect: "NoSchedule"
+```
+
+#### Node Selector
+
+```yaml
+spec:
+    nodeSelector:
+      size: Large #label on the node
+```
+
+Label Nodes 
+
+`kubectl label nodes <node-name> <label-key> = <label-value>`
+`kubectl label nodes node-1 size=large`
+
+Limitations of Node selector 
+    - Large OR Medium?
+    - NOT Small? 
+
+For these we have to use Node Affinity
+
+#### Node Affinity
+
+```yaml
+affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: size
+                operator: In
+                values:
+                  - Large
+                  - Medium              
+              - key: size
+                operator: NotIn
+                values:
+                  - Small
+```
+
+What if there are no nodes with label size?
+
+Node Affinity Types:
+
+Available
+    - requiredDuringSchedulingIgnoredDuringExecution
+    - preferredDuringSchedulingIgnoredDuringExecution
+    
+Planned
+    - requiredDuringSchedulingRequiredDuringExecution
+    
+
