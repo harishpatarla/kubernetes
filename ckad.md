@@ -1,7 +1,9 @@
 ### CKAD
 
 https://github.com/marcusvieira88/CKAD-commands
+
 https://github.com/twajr/ckad-prep-notes
+
 https://dev.to/boncheff/certified-kubernetes-application-developer-notes-10i1
 
 ## Exam specific
@@ -439,6 +441,7 @@ spec:
 Label Nodes 
 
 `kubectl label nodes <node-name> <label-key> = <label-value>`
+
 `kubectl label nodes node-1 size=large`
 
 Limitations of Node selector 
@@ -471,10 +474,12 @@ What if there are no nodes with label size?
 Node Affinity Types:
 
 Available
+
     - requiredDuringSchedulingIgnoredDuringExecution
     - preferredDuringSchedulingIgnoredDuringExecution
     
 Planned
+
     - requiredDuringSchedulingRequiredDuringExecution
     
 
