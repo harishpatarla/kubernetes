@@ -77,7 +77,7 @@ $ kubectl [command] [TYPE] [NAME] -o <output_format>
 
 `-o yaml` Output a YAML formatted API object. 
 
-## Replication Controller
+### Replication Controller
 
 - High Availability
 - Load Balancing and Scaling - spans across multiple nodes when load increases.
@@ -132,23 +132,6 @@ $ kubectl scale --replicas=6 replicaset myapp-replicaset
 
 ```
 
-## Config Maps
-
-```yaml
-$ kubectl create configmap <config-name> --from-literal=<key>=<value>
-$ kubectl create configmap <config-name> --from-file=<path-to-file>
-
-$ kubectl get configmaps
-$ kubectl describe configmaps
-```
-
-```yaml
-envFrom:
-    - configMapRef:
-        name: app-config
-
-```
-
 #### Namespace
 
 ```yaml
@@ -165,8 +148,8 @@ kubectl get pods --all-namespaces
 docker run ubuntu
 docker ps
 docker ps -a
-container exists as long as process inside it is alive. Once the process is done container will exit.
 ```
+container exists as long as process inside it is alive. Once the process is done container will exit.
 
 #### commands and arguments in k8s
 ##### Edit a pod - 1st approach
@@ -201,4 +184,162 @@ So if you are asked to edit a property of a POD part of a deployment you may do 
 
 `kubectl edit deployment my-deployment`
 
+#### Def Env. variables in pod defination file 
 
+1.  Plain key value
+```yaml
+env:
+  - name: APP_COLOR
+    value: pink
+```
+2.  Config Map
+```yaml
+env:
+  - name: APP_COLOR
+    valueFrom:
+      configMapKeyRef:
+``` 
+3.  Secrets
+```yaml
+env:
+  - name: APP_COLOR
+    valueFrom:
+      secretKeyRef:
+```
+### Config Maps
+
+```yaml
+$ kubectl create configmap <config-name> --from-literal=<key>=<value>
+$ kubectl create configmap <config-name> --from-file=<path-to-file>
+
+$ kubectl create configmap app-config --from-literal=APP_COLOR=BLUE \
+                                      --from-literal=APP_ENV=PROD
+$ kubectl create configmap <config-map> --from-file=app_config.properties
+
+$ kubectl get configmaps
+$ kubectl describe configmaps
+```
+
+1.  Env
+```yaml
+envFrom:
+    - configMapRef:
+        name: app-config
+```
+2. Single Env
+```yaml
+env:
+    - name: APP_COLOR
+      valueFrom:
+        configMapKeyRef:
+          name: app-config
+          key:  APP_COLOR
+``` 
+
+3.  Volume
+```yaml
+volumes:
+    - name: app-config-volume
+      configMap: 
+        name: app-config
+```
+
+### Secrets
+
+```yaml
+kubectl create secret generic <secret-name> --from-literal=<key> = <value>
+kubectl create secret generic app-secret --from-literal=DB_HOST=mysql
+
+kubectl create secret generic <secret-name> --from-file= <path-to-file>
+kubectl create secret generic app-secret --from-file=app_secret.properties
+
+kubectl get secrets
+kubectl describe secrets
+kubectl get secret app-secret -o yaml
+```
+
+`echo -n 'abcdef' | base64 --decode'`
+
+
+1.  Env
+```yaml
+envFrom:
+    - secretRef:
+        name: app-secret
+```
+2. Single Env
+```yaml
+env:
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: app-secret
+          key:  DB_PASSWORD
+``` 
+
+3.  Volume
+```yaml
+volumes:
+    - name: app-secret-volume
+      secret: 
+        secretName: app-secret
+```
+
+Secrets encode data in base64 format. Anyone with the base64 encoded secret can easily decode it. 
+As such the secrets can be considered as not very safe.
+
+Secrets are not encrypted, some best practices around using secrets make it safer.
+
+1.  Not checking-in secret object definition files to source code repositories.
+2.  Enabling Encryption at Rest for Secrets, so they are stored encrypted in ETCD. 
+
+Also the way kubernetes handles secrets. Such as:
+
+1.  A secret is only sent to a node if a pod on that node requires it.
+2.  Kubelet stores the secret into a tmpfs so that the secret is not written to disk storage.
+3.  Once the Pod that depends on the secret is deleted, kubelet will delete its local copy of the secret data as well.
+
+Risks - https://kubernetes.io/docs/concepts/configuration/secret/#risks
+Protection - https://kubernetes.io/docs/concepts/configuration/secret/#protections
+
+There are other better ways of handling sensitive data like passwords in Kubernetes, such as using tools like Helm Secrets, HashiCorp Vault.
+
+#### Docker Security
+```yaml
+docker run --cap-add MAC_ADMIN ubuntu 
+```
+
+#### Security context 
+```yaml
+spec:
+    containers:
+    - name: ubuntu
+      image: ubuntu
+      command: ["sleep", "3600"]
+      securityContext: 
+        runAsUser: 1000
+        capabilities: 
+          add: ["MAC_ADMIN"]
+```
+Capabilities are only supported at the container level and not at the pod level.
+
+#### Service accounts
+
+User accounts are used my humans - admin to manage cluster, dev to deploy an application 
+
+service accounts are used by applications - Prometheus, Jenkins etc. 
+Prometheus pools the k8s apis to extract.
+
+```yaml
+$ kubectl create serviceaccount dashboard-sa
+$ kubectl get serviceaccount
+$ kubectl describe serviceaccount dashboard-sa
+$ curl https://k8s-master/api -insecure --header "Authorization: Bearer ..."
+
+$ kubectl exec -it my-k8s-dahboard ls /var/run/secrets/k8s.io/serviceaccount
+$ kubectl exec -it my-k8s-dahboard ls /var/run/secrets/k8s.io/serviceaccount/token
+
+``` 
+
+#### Resource Requirements
+K8s scheduler decides which node a pod goes to
