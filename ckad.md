@@ -4,7 +4,21 @@ https://github.com/marcusvieira88/CKAD-commands
 
 https://github.com/twajr/ckad-prep-notes
 
+https://github.com/lucassha/CKAD-resources
+
 https://dev.to/boncheff/certified-kubernetes-application-developer-notes-10i1
+
+https://medium.com/@harioverhere/ckad-certified-kubernetes-application-developer-my-journey-3afb0901014
+
+https://www.linkedin.com/pulse/my-ckad-exam-experience-atharva-chauthaiwale/
+
+https://github.com/dgkanatsios/CKAD-exercises
+
+Auto-completion is available. You just need to take care that if you use "aliases" for referring to "kubectl" command, this auto-completion will be missed. To fix this problem you just have to follow this k8s official instructions: 
+https://kubernetes.io/docs/reference/kubectl/cheatsheet/#kubectl-autocomplete
+
+https://medium.com/@iizotov/exam-notes-ckad-c1c4f9fb9e73
+
 
 ## Exam specific
 Set alias
@@ -12,6 +26,9 @@ Set alias
 export KUBE_EDITOR=nano
 alias k=$ kubectl
 alias kx=”$ kubectl explain”
+export ns=default
+alias kn='kubectl -n $ns' # This helps when namespace in question doesn't have a friendly name 
+alias kdr= 'kubectl -n $ns -o yaml --dry-run'.  # run commands in dry run mode and generate yaml.
 ```
 
 ```
@@ -482,4 +499,26 @@ Planned
 
     - requiredDuringSchedulingRequiredDuringExecution
     
+#### Multi-container pods
 
+you sometimes need pods to work together with some level of seperation of concerns.
+
+However, they would share the same  
+    
+    - lifecycle - created and destroyed together
+    - network - they can refer each other as localhost
+    - have access to same storage volume 
+    
+1.  Sidecar - `Log server container as sidecar container along with the main container`
+    
+2.  Adapter - `Formatting logs generated in different formats to a common format before sending to log server`
+
+3. Ambassador - `Application may need to talk to different DB env during diff. stages of development.
+ We can extract that logic to another component and Application can always talk to localhost 
+ and that will proxy the request to specific env`
+
+#### Readiness and Liveness probes
+
+#### Container logging
+
+#### Monitor and Debug Applications
