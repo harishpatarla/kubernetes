@@ -59,7 +59,7 @@ kubectl create deployment does not have a --replicas option.
 
 You could first create it and then scale it using the kubectl scale command. You could then change replicas by updating yaml file. 
 
-#### Create a Service named redis-service of type ClusterIP to expose pod redis on port 6379
+* #### Create a Service named redis-service of type ClusterIP to expose pod redis on port 6379
 ```bash
 $ kubectl expose pod redis --port=6379 --name redis-service --dry-run=client -o yaml
 or
@@ -70,7 +70,7 @@ This will not use the pod labels as selectors, instead it will assume selectors 
  You cannot pass in selectors as an option. So it does not work very well if your pod has a different label set. 
  So generate the file and modify the selectors before creating the service(clusterip|loadbalancer|nodeport).
 
-#### Create a Service named nginx of type NodePort to expose pod nginx's port 80 on port 30080 on the nodes:
+* #### Create a Service named nginx of type NodePort to expose pod nginx's port 80 on port 30080 on the nodes:
 
 ```yaml
 $ kubectl expose pod nginx --port=80 --name nginx-service --type=NodePort --dry-run=client -o yaml 
@@ -98,7 +98,7 @@ $ kubectl [command] [TYPE] [NAME] -o <output_format>
 
 `-o yaml` Output a YAML formatted API object. 
 
-### Replication Controller
+* #### Replication Controller
 
 - High Availability
 - Load Balancing and Scaling - spans across multiple nodes when load increases.
@@ -111,7 +111,7 @@ $ kubectl get replicationcontroller
 $ kubectl get pods
 ```
 
-### ReplicaSets
+* #### ReplicaSets
 
 apiVersion: apps/v1 - because support for replica-set is introduced in apps/v1 version.
 
@@ -147,13 +147,7 @@ $ kubectl scale --replicas=6 -f replicaset-definition.yml
 $ kubectl scale --replicas=6 replicaset myapp-replicaset
 ```
 
-## Deployment
-
-```yaml
-
-```
-
-#### Namespace
+* #### Namespace
 
 ```yaml
 kubectl create -f namespace-dev.yaml
@@ -165,7 +159,7 @@ kubectl get pods --all-namespaces
 ```
 ### Section 3: Configuration
 
-#### docker 
+* #### docker 
 ```yaml
 docker run ubuntu
 docker ps
@@ -173,8 +167,8 @@ docker ps -a
 ```
 container exists as long as process inside it is alive. Once the process is done container will exit.
 
-#### commands and arguments in k8s
-##### Edit a pod - 1st approach
+* #### commands and arguments in k8s
+* ##### Edit a pod - 1st approach
 
 ```yaml
 `kubectl edit pod <pod name>` - maybe denied
@@ -189,7 +183,7 @@ Remember, you CANNOT edit specifications of an existing POD other than the below
 3.  spec.activeDeadlineSeconds
 4.  spec.tolerations
 
-##### Edit a pod - 2nd approach
+* ##### Edit a pod - 2nd approach
 ```yaml
 kubectl get pod webapp -o yaml > my-new-pod.yaml
 vi my-new-pod.yaml
@@ -197,7 +191,7 @@ kubectl delete pod webapp
 kubectl create -f my-new-pod.yaml
 ```
 
-##### Edit Deployments
+* ##### Edit Deployments
 With Deployments you can easily edit any field/property of the POD template.
  
 Since the pod template is a child of the deployment specification,  with every change the deployment will automatically delete and create a new pod with the new changes. 
@@ -206,7 +200,7 @@ So if you are asked to edit a property of a POD part of a deployment you may do 
 
 `kubectl edit deployment my-deployment`
 
-#### Def Env. variables in pod defination file 
+* #### Def Env. variables in pod defination file 
 
 1.  Plain key value
 ```yaml
@@ -326,12 +320,12 @@ Protection - https://kubernetes.io/docs/concepts/configuration/secret/#protectio
 
 There are other better ways of handling sensitive data like passwords in Kubernetes, such as using tools like Helm Secrets, HashiCorp Vault.
 
-#### Docker Security
+* #### Docker Security
 ```yaml
 docker run --cap-add MAC_ADMIN ubuntu 
 ```
 
-#### Security context 
+* #### Security context 
 ```yaml
 spec:
     containers:
@@ -345,7 +339,7 @@ spec:
 ```
 Capabilities are only supported at the container level and not at the pod level.
 
-#### Service accounts
+* #### Service accounts
 
 User accounts are used my humans - admin to manage cluster, dev to deploy an application 
 
@@ -363,7 +357,7 @@ $ kubectl exec -it my-k8s-dahboard ls /var/run/secrets/k8s.io/serviceaccount/tok
 
 ``` 
 
-#### Resource Requirements
+* #### Resource Requirements
 K8s scheduler decides which node a pod goes to
 
 min. resource
@@ -423,7 +417,7 @@ spec:
     type: Container
 ```
 
-#### Taints and Tolerations
+* #### Taints and Tolerations
 
 Taints are set on nodes and tolerations are set on pods.
 
@@ -448,7 +442,7 @@ spec:
         effect: "NoSchedule"
 ```
 
-#### Node Selector
+* #### Node Selector
 
 ```yaml
 spec:
@@ -468,7 +462,7 @@ Limitations of Node selector
 
 For these we have to use Node Affinity
 
-#### Node Affinity
+* #### Node Affinity
 
 ```yaml
 affinity:
@@ -520,7 +514,7 @@ However, they would share the same
 
 ### Section 5: Observability
 
-#### Readiness and Liveness probes
+* #### Readiness and Liveness probes
 
 _Status:_ `Pending -> ContainerCreating -> Running`
 
@@ -544,13 +538,13 @@ spec:
         periodSeconds: 5
         failureThreshold: 8
 ```
-#### Container logging
+* #### Container logging
 
 ```bash
 $ kubectl logs -f pod-name container-name
 ```
 
-#### Monitor and Debug Applications
+* #### Monitor and Debug Applications
 
 Heapster(deprecated)
 
@@ -562,7 +556,7 @@ $ kubectl top pod
 
 ### Section 6 - Pod Design
 
-#### Labels, Selectors and Annotations
+* #### Labels, Selectors and Annotations
 3 pods will be labeled as _app: App1_ and replica set will have selector: matchLabels - app: App1 to link 3 pods to the replica set.
 ```bash
 $ kubectl get pods --selector app=App1
@@ -570,12 +564,12 @@ $ kubectl get pods --selector app=App1
 
 _Annotations_ are used to save other info like buildversion, email, contact etc.
 
-#### Rolling updates and Rollbacks in Deployments
+* #### Rolling updates and Rollbacks in Deployments
 
 ```bash
 $ kubectl rollout status deployment/myapp-deployment
 $ kubectl rollout history deployment/myapp-deployment
 ```
 
-* Default deployment strategy - _rolling updates_
+* Default deployment strategy - _RollingUpdate_
 
