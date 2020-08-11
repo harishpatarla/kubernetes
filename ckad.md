@@ -163,6 +163,7 @@ kubectl config set-context $(kubectl config current-context) --namespace=dev (sw
 kubectl get pods --all-namespaces
 
 ```
+### Section 3: Configuration
 
 #### docker 
 ```yaml
@@ -498,8 +499,8 @@ Available
 Planned
 
     - requiredDuringSchedulingRequiredDuringExecution
-    
-#### Multi-container pods
+
+### Section 4: Multi-container pods
 
 you sometimes need pods to work together with some level of seperation of concerns.
 
@@ -509,16 +510,72 @@ However, they would share the same
     - network - they can refer each other as localhost
     - have access to same storage volume 
     
-1.  Sidecar - `Log server container as sidecar container along with the main container`
+1.  _Sidecar_ - `Log server container as sidecar container along with the main container`
     
-2.  Adapter - `Formatting logs generated in different formats to a common format before sending to log server`
+2.  _Adapter_ - `Formatting logs generated in different formats to a common format before sending to log server`
 
-3. Ambassador - `Application may need to talk to different DB env during diff. stages of development.
+3. _Ambassador_ - `Application may need to talk to different DB env during diff. stages of development.
  We can extract that logic to another component and Application can always talk to localhost 
  and that will proxy the request to specific env`
 
+### Section 5: Observability
+
 #### Readiness and Liveness probes
 
+_Status:_ `Pending -> ContainerCreating -> Running`
+
+_Conditions:_ `PodScheduled -> Initialized -> ContainersReady -> Ready`
+
+```yaml
+spec:
+    containers:
+      - name : simple-webapp
+        readinessProbe:
+          httpGet:
+            path: /api/ready
+            port: 8080
+          tcpSocket:
+            port: 3306
+          exec:
+            command:
+              - cat
+              - /app/is_ready
+        initialDelaySeconds: 10
+        periodSeconds: 5
+        failureThreshold: 8
+```
 #### Container logging
 
+```bash
+$ kubectl logs -f pod-name container-name
+```
+
 #### Monitor and Debug Applications
+
+Heapster(deprecated)
+
+Both of these gives 
+```bash
+$ kubectl top node
+$ kubectl top pod
+```
+
+### Section 6 - Pod Design
+
+#### Labels, Selectors and Annotations
+3 pods will be labeled as _app: App1_ and replica set will have selector: matchLabels - app: App1 to link 3 pods to the replica set.
+```bash
+$ kubectl get pods --selector app=App1
+```
+
+_Annotations_ are used to save other info like buildversion, email, contact etc.
+
+#### Rolling updates and Rollbacks in Deployments
+
+```bash
+$ kubectl rollout status deployment/myapp-deployment
+$ kubectl rollout history deployment/myapp-deployment
+```
+
+* Default deployment strategy - _rolling updates_
+
