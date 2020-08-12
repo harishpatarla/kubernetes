@@ -105,12 +105,11 @@ spec:
       retryOn: 5xx
 ```
 
-**_we can configure retries, timeouts, etc.
-Istio is control plane for communication between services.
+_we can configure retries, timeouts, etc.
+Istio is control plane for communication between services._
     
-Istio can be default as containers in k8s cluster which can be injected as proxies.
-You can configure your namespace to automatically inject istio proxies to any containers._**
-
+_Istio can be default as containers in k8s cluster which can be injected as proxies.
+You can configure your namespace to automatically inject istio proxies to any containers._
 
 #### Managing service Traffic - Blue/Green,  Canary deployments, Dark launch
 

@@ -546,7 +546,9 @@ $ kubectl logs -f pod-name container-name
 
 * #### Monitor and Debug Applications
 
-Heapster(deprecated)
+-   Heapster(deprecated) - metrics server
+-   Prometheus
+-   Datadog
 
 Both of these gives 
 ```bash
@@ -567,9 +569,27 @@ _Annotations_ are used to save other info like buildversion, email, contact etc.
 * #### Rolling updates and Rollbacks in Deployments
 
 ```bash
-$ kubectl rollout status deployment/myapp-deployment
-$ kubectl rollout history deployment/myapp-deployment
+$ kubectl create -f deployment-definition.yml - CREATE
+$ kubectl get deployments - GET
+$ kubectl apply -f deployment-definition.yml - UPDATE
+$ kubectl set image deployment/myapp-deployment nginx=nginx:1.9.1 - UPDATE
+$ kubectl rollout status deployment/myapp-deployment - STATUS
+$ kubectl rollout history deployment/myapp-deployment - STATUS
+$ kubectl rollout undo deployment/myapp-deployment - ROLLBACK
 ```
 
 * Default deployment strategy - _RollingUpdate_
 
+You can check the status of each revision individually by using the --revision flag
+
+```bash
+$ kubectl rollout history deployment nginx --revision=1
+```
+
+```bash
+$ kubectl set image deployment nginx nginx=nginx:1.17 --record=true
+$ kubectl describe deployments. nginx | grep -i image:
+  Image:    nginx:1.17
+```
+
+* #### 
