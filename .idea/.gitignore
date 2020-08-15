@@ -6,3 +6,10 @@
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+/misc.xml
+/$CACHE_FILE$
+/dbnavigator.xml
+/vcs.xml
+/kubernetes.iml
+/modules.xml
+/inspectionProfiles/Project_Default.xml
