@@ -19,6 +19,11 @@ https://kubernetes.io/docs/reference/kubectl/cheatsheet/#kubectl-autocomplete
 
 https://medium.com/@iizotov/exam-notes-ckad-c1c4f9fb9e73
 
+Use below resources for practicing.
+https://medium.com/bb-tutorials-and-thoughts/practice-enough-with-these-questions-for-the-ckad-exam-2f42d1228552
+https://codeburst.io/kubernetes-ckad-weekly-challenges-overview-and-tips-7282b36a2681
+https://killer.sh/ckad
+
 
 ## Exam specific
 Set alias
@@ -43,6 +48,37 @@ $ kubectl run frontend --replicas=2 --labels=run=load-balancer-example --image=b
 $ kubectl expose deployment frontend --type=NodePort --name=frontend-service --port=6262 --target-port=8080
 $ kubectl set serviceaccount deployment frontend myuser
 $ kubectl create service clusterip my-cs --tcp=5678:8080 --dry-run -o yaml
+```
+
+More alias for exam:
+
+```bash
+sudo -i
+source <(kubectl completion bash)
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+complete -F __start_kubectl k
+export do="--dry-run=client -o yaml"
+export now="--force --grace-period=0"
+alias k="kubectl"
+alias kcf="k create"
+alias kdf="k delete $now"
+alias kdff="kdf -f"
+alias krp="k run"                   
+alias krpy="krp $do"
+alias krd="k create deployment"
+alias krdy="krd $do"
+If you simply want to create a Pod use :
+krp --image=nging nginx
+If you want pod with yaml use:
+krpy --image=nging nginx > nginx-pod.yaml
+If you simply want to create a Deployment use :
+krd --image=nging nginx
+If you want deployment with yaml use:
+krdy --image=nging nginx > nginx-dep.yaml
+If you want to delete a Pod use :
+kdf po nginx
+If you want to delete a Pod for which yaml is present use :
+kdff nginx-pod.yaml
 ```
 
 ```yaml
